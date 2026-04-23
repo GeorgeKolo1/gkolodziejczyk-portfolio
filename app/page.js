@@ -115,12 +115,12 @@ export default function Page() {
       summary:
         "My project focuses on host-association studies of Salmonella Typhimurium using machine learning",
       bullets: [
-        "Led deployment of distributed compute on AWS using Terraform and Ansible, supporting scheduling, shared storage, and reproducible container runtimes.",
-        "Supported researchers running production-scale workloads; diagnosed issues across scheduling, networking, and container execution.",
-        "Built containerised services with Docker and Apptainer, with an emphasis on reproducibility and operational stability.",
-        "Deployed a GPU-backed LLM service (PyTorch + Transformers) with attention to capacity planning and long-running service reliability.",
+        "........",
+        "........",
+        "........",
+        ".........",
       ],
-      tags: ["AWS", "Terraform", "Ansible", "Docker", "PyTorch"],
+      tags: ["experimental design", "machine learning", "Python", "Git", "PyTorch, 'scikit-learn'", "PyMC, Stan", "Linux", "AWS, HPC clusters"],
     },
     {
       company: "Previous Institution",
