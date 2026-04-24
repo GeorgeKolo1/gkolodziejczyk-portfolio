@@ -81,11 +81,11 @@ export default function Page() {
 
   const researchAreas = [
     "Pathogen genomics",
-    "Scientific computing",
     "Research software engineering",
     "machine learning",
     "Bayesian inference",
     "Statistical genomics",
+    "Scientific computing"
   ];
 
   const skills = [
@@ -392,12 +392,11 @@ export default function Page() {
                 I work at the boundary between{" "}
                 <span className="emph-magenta">research</span> and{" "}
                 <span className="emph-magenta">research software engineering</span> —
-                developing both the scientific methods and the computational
-                infrastructure that makes them reproducible at scale.
+                developing both the scientific methods and the software that makes them reproducible and accesible at scale.
               </p>
               <p>
                 My doctoral research investigates{" "}
-                <span className="emph-teal">[host-association models of <em> Salmonella </em> Typhimurium]</span>, using
+                <span className="emph-teal">host-association models of <em> Salmonella </em> Typhimurium</span>, using
                 a combination of machine learning, software engineering,
                 and bayesian inference. I have deployed production-grade
                 research software to solve research problems and enable efficient scientific research.
