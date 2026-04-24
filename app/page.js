@@ -397,12 +397,10 @@ export default function Page() {
               </p>
               <p>
                 My doctoral research investigates{" "}
-                <span className="emph-teal">[specific research question]</span>, using
-                a combination of numerical simulation, high-performance computing,
-                and modern MLOps-adjacent tooling. I have deployed production-grade
-                compute environments on AWS and on-prem clusters, supported users
-                running large-scale workloads, and diagnosed performance and
-                correctness issues across compute, storage, and networking layers.
+                <span className="emph-teal">[host-association models of <em> Salmonella </em> Typhimurium]</span>, using
+                a combination of machine learning, software engineering,
+                and bayesian inference. I have deployed production-grade
+                research software to solve research problems and enable efficient scientific research.
               </p>
               <p>
                 I am particularly interested in the{" "}
@@ -525,9 +523,8 @@ export default function Page() {
                   <p
                     className="text-[16px] leading-relaxed mb-4 justify-para"
                     style={{ color: C.ink2 }}
-                  >
-                    {job.summary}
-                  </p>
+                    dangerouslySetInnerHTML={{ __html: job.summary }}
+                  />
                   <ol className="space-y-2 mb-5 text-[15px] leading-relaxed list-none">
                     {job.bullets.map((b, bi) => (
                       <li key={bi} className="flex gap-3" style={{ color: C.ink2 }}>
@@ -537,7 +534,7 @@ export default function Page() {
                         >
                           ({romanize(bi + 1)})
                         </span>
-                        <span className="justify-para">{b}</span>
+                        <span className="justify-para" dangerouslySetInnerHTML={{ __html: b }} />
                       </li>
                     ))}
                   </ol>
@@ -589,9 +586,9 @@ export default function Page() {
                     </span>
                   </div>
                   {e.note && (
-                    <div className="text-[14px] mt-1 italic" style={{ color: C.muted }}>
-                      {e.note}
-                    </div>
+                    <div className="text-[14px] mt-1 italic" style={{ color: C.muted }}
+                      dangerouslySetInnerHTML={{ __html: e.note }}
+                    />
                   )}
                 </div>
               </div>
