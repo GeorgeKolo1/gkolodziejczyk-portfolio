@@ -113,27 +113,15 @@ export default function Page() {
       role: "PhD student",
       dates: "2024–present",
       summary:
-        "My project focuses on host-association studies of Salmonella Typhimurium using machine learning",
+        "My project focuses on host-association studies of <em> Salmonella </em> Typhimurium using machine learning",
       bullets: [
-        "........",
-        "........",
-        "........",
+        "Investigated machine learning approaches for direct replacement of the <em> Salmonella </em> Typhimurium phage typing scheme using whole genome sequencing based subtyping methods",
+        "Assessed the potential of using conformal prediction to quantify uncertainty in model predictions of the animal host of <em> Salmonella </em> Typhimurium",
+        ".Performed genome-wide association studies to identify genomic markers associated with phage types and animal hosts of <em> Salmonella </em> Typhimurium",
         ".........",
       ],
       tags: ["experimental design", "machine learning", "Python", "Git", "PyTorch, 'scikit-learn'", "PyMC, Stan", "Linux", "AWS, HPC clusters"],
-    },
-    {
-      company: "Previous Institution",
-      role: "Research Assistant / Engineer",
-      dates: "2023–2024",
-      summary:
-        "Brief description of the role and the research group you contributed to.",
-      bullets: [
-        "Built Python-based services and numerical pipelines used by the research group.",
-        "Resolved issues across application and HPC infrastructure layers in collaboration with systems staff.",
-      ],
-      tags: ["Python", "REST APIs", "Linux"],
-    },
+    }
   ];
 
   const education = [
@@ -141,7 +129,7 @@ export default function Page() {
       years: "2024–present",
       degree: "Ph.D. Biosciences & Medicine (Bioinformatics and Applied AI / Machine Learning)",
       school: "University of Surrey",
-      note: "Thesis: Machine Learning approaches for genomic host association in Salmonella",
+      note: "Thesis: Machine Learning approaches for genomic host association in <em> Salmonella </em>",
     },
     {
       years: "2023–2024",
@@ -315,7 +303,7 @@ export default function Page() {
                 <span className="emph-magenta">computational biology</span> and{" "}
                 <span className="emph-magenta">machine learning</span> applied to pathogen genomics..
                 My research focuses on developing {" "}
-                <span className="emph-teal">machine learning models </span> and <span className='emph-teal'>research software</span> than can enable surveillance and outbreak investigations of Salmonella Typhimurium, drawing on
+                <span className="emph-teal">machine learning models </span> and <span className='emph-teal'>research software</span> than can enable surveillance and outbreak investigations of <em> Salmonella </em> Typhimurium, drawing on
                 classical machine learning methods, conformal prediction and uncertainty quantification, as well as modern
                 software engineering practices. In parallel, I contribute to research
                 software engineering efforts across my department — building
