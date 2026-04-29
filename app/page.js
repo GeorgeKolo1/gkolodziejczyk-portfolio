@@ -31,6 +31,7 @@ function OrcidIcon(props) {
 // Palette — paper tones + a scientific-journal accent pair (teal + magenta).
 const C = {
   bg: "#fbfaf6",
+  paper: "#f4f1e8",
   ink: "#1a1a1a",
   ink2: "#2e2e2e",
   muted: "#5a5a5a",
@@ -39,109 +40,257 @@ const C = {
   ruleSoft: "rgba(26, 26, 26, 0.06)",
 
   // Accents — inspired by microbial genomics / molecular-biology visual conventions.
-  teal: "#0a7e8f",        // primary accent: muted scientific teal
-  tealBright: "#12a2b3",  // brighter hover state
+  teal: "#0a7e8f",
+  tealBright: "#12a2b3",
   tealSoft: "rgba(10, 126, 143, 0.08)",
   tealRule: "rgba(10, 126, 143, 0.28)",
-  magenta: "#a4174d",     // secondary accent: deep scientific magenta
+  magenta: "#a4174d",
   magentaSoft: "rgba(164, 23, 77, 0.06)",
 };
 
+// Decorative schematic phylogeny — fitting for the discipline, no data implied.
+function Cladogram({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 120 92"
+      className={className}
+      aria-hidden="true"
+      role="presentation"
+    >
+      <g
+        fill="none"
+        stroke={C.tealRule}
+        strokeWidth="0.7"
+        strokeLinecap="round"
+      >
+        <line x1="2" y1="46" x2="22" y2="46" />
+        {/* upper clade */}
+        <line x1="22" y1="46" x2="22" y2="22" />
+        <line x1="22" y1="22" x2="44" y2="22" />
+        <line x1="44" y1="22" x2="44" y2="10" />
+        <line x1="44" y1="10" x2="104" y2="10" />
+        <line x1="44" y1="22" x2="44" y2="34" />
+        <line x1="44" y1="34" x2="104" y2="34" />
+        {/* lower clade */}
+        <line x1="22" y1="46" x2="22" y2="70" />
+        <line x1="22" y1="70" x2="58" y2="70" />
+        <line x1="58" y1="70" x2="58" y2="58" />
+        <line x1="58" y1="58" x2="104" y2="58" />
+        <line x1="58" y1="70" x2="58" y2="82" />
+        <line x1="58" y1="82" x2="104" y2="82" />
+      </g>
+      <g fill={C.teal}>
+        <circle cx="106" cy="10" r="1.6" />
+        <circle cx="106" cy="34" r="1.6" />
+        <circle cx="106" cy="58" r="1.6" />
+        <circle cx="106" cy="82" r="1.6" />
+      </g>
+    </svg>
+  );
+}
+
+const NAV_ITEMS = [
+  { id: "about", label: "About", num: "1" },
+  { id: "skills", label: "Skills", num: "2" },
+  { id: "experience", label: "Experience", num: "3" },
+  { id: "education", label: "Education", num: "4" },
+  { id: "contact", label: "Contact", num: "5" },
+];
+
+const RESEARCH_AREAS = [
+  "Pathogen genomics",
+  "Research software engineering",
+  "Machine learning",
+  "Bayesian inference",
+  "Statistical genomics",
+  "Scientific computing",
+];
+
+const SKILLS = [
+  {
+    title: "Software engineering",
+    items: [
+      "Python · C++",
+      "Git · Linux · shell scripting",
+      "Unit testing · CI/CD",
+      "Code review",
+    ],
+  },
+  {
+    title: "Machine learning",
+    items: [
+      "scikit-learn · PyTorch",
+      "Classical & explainable ML",
+      "Conformal prediction",
+    ],
+  },
+  {
+    title: "Statistics",
+    items: [
+      "Statistical testing & regression",
+      "Bayesian statistics & inference",
+      "Probabilistic programming (PyMC, Stan)",
+    ],
+  },
+  {
+    title: "Genomics & bioinformatics",
+    items: [
+      "Microbial subtyping & phylogenetics",
+      "Pathogen genomics",
+      "Population genetics, GWAS",
+      "Statistical genomics",
+    ],
+  },
+];
+
+const EXPERIENCE = [
+  {
+    company:
+      "Ritchie Lab — University of Surrey & Animal and Plant Health Agency (APHA)",
+    role: "PhD student",
+    dates: "2024 – present",
+    summary: (
+      <>
+        My project focuses on host-association studies of{" "}
+        <i>Salmonella</i> Typhimurium using machine learning.
+      </>
+    ),
+    bullets: [
+      <>
+        Investigated machine learning approaches as a direct replacement for
+        the <i>Salmonella</i> Typhimurium phage-typing scheme, using
+        whole-genome-sequencing-based subtyping methods.
+      </>,
+      <>
+        Assessed conformal prediction for quantifying uncertainty in model
+        predictions of the animal host of <i>Salmonella</i> Typhimurium.
+      </>,
+      <>
+        Performed genome-wide association studies to identify genomic markers
+        associated with phage types and animal hosts of <i>Salmonella</i>{" "}
+        Typhimurium.
+      </>,
+    ],
+    tags: [
+      "experimental design",
+      "machine learning",
+      "Python",
+      "Git",
+      "PyTorch",
+      "scikit-learn",
+      "PyMC",
+      "Stan",
+      "Linux",
+      "AWS",
+      "HPC",
+    ],
+  },
+];
+
+const EDUCATION = [
+  {
+    years: "2024 – present",
+    degree:
+      "Ph.D. Biosciences & Medicine (Bioinformatics and Applied AI / Machine Learning)",
+    school: "University of Surrey",
+    note: (
+      <>
+        Thesis — Machine learning approaches for genomic host association in{" "}
+        <i>Salmonella</i>.
+      </>
+    ),
+  },
+  {
+    years: "2023 – 2024",
+    degree: "M.Sc. Rehabilitation Engineering & Assistive Technology",
+    school: "University College London (UCL)",
+  },
+  {
+    years: "2020 – 2023",
+    degree: "B.Sc.",
+    school: "University of Plymouth",
+  },
+];
+
 export default function Page() {
   const [activeSection, setActiveSection] = useState("about");
+  const [progress, setProgress] = useState(0);
 
+  // Active-section tracking via IntersectionObserver — cheaper and more
+  // accurate than a scroll listener.
   useEffect(() => {
-    const sections = ["about", "skills", "experience", "education", "contact"];
+    const ids = NAV_ITEMS.map((n) => n.id);
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    if (!els.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(visible.target.id);
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+    els.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // Reading progress.
+  useEffect(() => {
     const onScroll = () => {
-      const y = window.scrollY + 140;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
-        if (el && el.offsetTop <= y) {
-          setActiveSection(sections[i]);
-          break;
-        }
+      const h = document.documentElement;
+      const max = h.scrollHeight - h.clientHeight;
+      const ratio = max > 0 ? h.scrollTop / max : 0;
+      setProgress(Math.max(0, Math.min(1, ratio)) * 100);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Keyboard shortcuts: 1–5 jump between sections.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target;
+      const tag = (t?.tagName || "").toLowerCase();
+      if (
+        tag === "input" ||
+        tag === "textarea" ||
+        tag === "select" ||
+        t?.isContentEditable
+      )
+        return;
+      const map = {
+        1: "about",
+        2: "skills",
+        3: "experience",
+        4: "education",
+        5: "contact",
+      };
+      if (map[e.key]) {
+        e.preventDefault();
+        scrollTo(map[e.key]);
       }
     };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const scrollTo = (id) => {
     const el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.offsetTop - 72, behavior: "smooth" });
+    if (!el) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({
+      top: el.offsetTop - 72,
+      behavior: reduce ? "auto" : "smooth",
+    });
   };
-
-  const navItems = [
-    { id: "about", label: "About", num: "1" },
-    { id: "skills", label: "Skills", num: "2" },
-    { id: "experience", label: "Experience", num: "3" },
-    { id: "education", label: "Education", num: "4" },
-    { id: "contact", label: "Contact", num: "5" },
-  ];
-
-  const researchAreas = [
-    "Pathogen genomics",
-    "Research software engineering",
-    "machine learning",
-    "Bayesian inference",
-    "Statistical genomics",
-    "Scientific computing"
-  ];
-
-  const skills = [
-    {
-      title: "Software engineering",
-      items: ["Python", "C++", "Linux (bash), unit testing, CI/CD, code review"],
-    },
-    {
-      title: "Machine learning",
-      items: ["scikit-learn", "classical machine learning", "explainable machine learning", 'conformal prediction'],
-    },
-    {
-      title: "Statistics",
-      items: ["Statistical testing, regression, Bayesian statistics and inference", "Probabilistic programming (PyMC, Stan)"],
-    },
-    {
-      title: "Genomics & bioinformatics",
-      items: ["Microbial subtyping, phylogenetics, pathogen genomics", "Population genetics, GWAS, and statistical genomics"],
-    }
-  ];
-
-  const experience = [
-    {
-      company: "Ritchie Lab - University of Surrey, Animal and Plant Health Agency (APHA)",
-      role: "PhD student",
-      dates: "2024–present",
-      summary:
-        "My project focuses on host-association studies of <em> Salmonella </em> Typhimurium using machine learning",
-      bullets: [
-        "Investigated machine learning approaches for direct replacement of the <em> Salmonella </em> Typhimurium phage typing scheme using whole genome sequencing based subtyping methods",
-        "Assessed the potential of using conformal prediction to quantify uncertainty in model predictions of the animal host of <em> Salmonella </em> Typhimurium",
-        ".Performed genome-wide association studies to identify genomic markers associated with phage types and animal hosts of <em> Salmonella </em> Typhimurium",
-        ".........",
-      ],
-      tags: ["experimental design", "machine learning", "Python", "Git", "PyTorch, 'scikit-learn'", "PyMC, Stan", "Linux", "AWS, HPC clusters"],
-    }
-  ];
-
-  const education = [
-    {
-      years: "2024–present",
-      degree: "Ph.D. Biosciences & Medicine (Bioinformatics and Applied AI / Machine Learning)",
-      school: "University of Surrey",
-      note: "Thesis: Machine Learning approaches for genomic host association in <em> Salmonella </em>",
-    },
-    {
-      years: "2023–2024",
-      degree: "M.Sc. Rehabilitation Engineering & Assistive Technology",
-      school: "University College London (UCL)"
-    },
-    {
-      years: "2020–2023",
-      degree: "B.Sc.",
-      school: "University of Plymouth"
-    },
-  ];
 
   return (
     <div
@@ -164,11 +313,28 @@ export default function Page() {
 
         ::selection { background: ${C.teal}; color: ${C.bg}; }
 
+        :focus-visible {
+          outline: 2px solid ${C.teal};
+          outline-offset: 3px;
+          border-radius: 2px;
+        }
+
         @keyframes fade-up {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .fade-up { animation: fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+        @keyframes pulse-dot {
+          0%, 100% { box-shadow: 0 0 0 0 ${C.teal}55; }
+          50% { box-shadow: 0 0 0 6px transparent; }
+        }
+        .pulse-dot { animation: pulse-dot 2.4s ease-in-out infinite; }
+
+        @media (prefers-reduced-motion: reduce) {
+          .fade-up { animation: none; }
+          .pulse-dot { animation: none; }
+        }
 
         .scholarly-link {
           color: ${C.teal};
@@ -194,17 +360,54 @@ export default function Page() {
 
         .emph-magenta { color: ${C.magenta}; font-style: italic; }
         .emph-teal { color: ${C.teal}; font-style: italic; }
+
+        .tag {
+          color: ${C.teal};
+          background-color: ${C.tealSoft};
+          border: 1px solid transparent;
+          transition: border-color 0.15s, color 0.15s;
+        }
+        .tag:hover { border-color: ${C.tealRule}; color: ${C.tealBright}; }
+
+        .nav-link::after {
+          content: "";
+          position: absolute;
+          left: 0; right: 0; bottom: -2px;
+          height: 1.5px;
+          background: ${C.teal};
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.25s ease;
+        }
+        .nav-link[aria-current="true"]::after { transform: scaleX(1); }
       `}</style>
 
-      {/* Masthead / Nav — bumped to readable sizes */}
+      {/* Reading progress */}
+      <div
+        className="fixed top-0 left-0 right-0 z-[60] pointer-events-none no-print"
+        style={{ height: 2 }}
+        aria-hidden="true"
+      >
+        <div
+          style={{
+            height: "100%",
+            width: `${progress}%`,
+            backgroundColor: C.teal,
+            transition: "width 100ms linear",
+          }}
+        />
+      </div>
+
+      {/* Masthead / Nav */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50"
+        className="fixed top-0 left-0 right-0 z-50 no-print"
         style={{
           backgroundColor: "rgba(251, 250, 246, 0.88)",
           backdropFilter: "blur(8px)",
           WebkitBackdropFilter: "blur(8px)",
           borderBottom: `1px solid ${C.ruleSoft}`,
         }}
+        aria-label="Primary"
       >
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
           <button
@@ -221,54 +424,60 @@ export default function Page() {
               className="hidden sm:inline font-serif text-[15px]"
               style={{ color: C.muted }}
             >
-              · PhD student, Research software engineer
+              · PhD student, Research Software Engineer
             </span>
           </button>
 
           <div className="hidden md:flex items-center gap-6">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className="relative py-1 flex items-baseline gap-1.5 transition-colors"
-              >
-                <span
-                  className="font-mono text-[11px] tabular-nums"
-                  style={{
-                    color: activeSection === item.id ? C.teal : C.soft,
-                  }}
+            {NAV_ITEMS.map((item) => {
+              const active = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollTo(item.id)}
+                  aria-current={active ? "true" : undefined}
+                  className="nav-link relative py-1 flex items-baseline gap-1.5 transition-colors"
                 >
-                  §{item.num}
-                </span>
-                <span
-                  className="font-serif text-[16px]"
-                  style={{
-                    color: activeSection === item.id ? C.ink : C.muted,
-                  }}
-                >
-                  {item.label}
-                </span>
-                {activeSection === item.id && (
                   <span
-                    className="absolute left-0 right-0 -bottom-0.5 h-[1.5px]"
-                    style={{ backgroundColor: C.teal }}
-                  />
-                )}
-              </button>
-            ))}
+                    className="font-mono text-[11px] tabular-nums"
+                    style={{ color: active ? C.teal : C.soft }}
+                  >
+                    §{item.num}
+                  </span>
+                  <span
+                    className="font-serif text-[16px]"
+                    style={{ color: active ? C.ink : C.muted }}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </nav>
 
-      <main className="relative max-w-4xl mx-auto px-6 pt-36 pb-16">
-        {/* MASTHEAD / HERO */}
-        <section className="pb-28 fade-up">
+      <main
+        className="relative max-w-4xl mx-auto px-6 pt-36 pb-16"
+        id="top"
+      >
+        {/* HERO */}
+        <section className="pb-28 fade-up" aria-labelledby="hero-name">
           <div className="text-[11px] tracking-[0.22em] small-caps mb-10 flex items-center gap-3">
-            <span className="font-mono" style={{ color: C.teal }}></span>
-            <span className="flex-1 h-px" style={{ backgroundColor: C.rule }} />
+            <span className="font-mono" style={{ color: C.teal }}>
+              vol. i — research portfolio
+            </span>
+            <span
+              className="flex-1 h-px"
+              style={{ backgroundColor: C.rule }}
+            />
+            <span className="font-mono" style={{ color: C.soft }}>
+              2026
+            </span>
           </div>
 
           <h1
+            id="hero-name"
             className="font-serif mb-4"
             style={{
               fontSize: "clamp(2.75rem, 7vw, 5.25rem)",
@@ -289,7 +498,7 @@ export default function Page() {
             <span className="mx-3" style={{ color: C.teal }}>·</span>
             Research Software Engineer
             <span className="mx-3" style={{ color: C.teal }}>·</span>
-            University of Surrey - Ritchie Lab, Animal and Plant Health Agency (APHA)
+            University of Surrey — Ritchie Lab, Animal and Plant Health Agency (APHA)
           </div>
 
           <div className="grid md:grid-cols-12 gap-10 mb-12">
@@ -298,21 +507,28 @@ export default function Page() {
                 className="text-[18px] leading-[1.6] drop-cap justify-para"
                 style={{ color: C.ink2 }}
               >
-                I am a second year PhD student working on{" "}
-                <span className="emph-magenta">computational biology</span> and{" "}
-                <span className="emph-magenta">machine learning</span> applied to pathogen genomics..
-                My research focuses on developing {" "}
-                <span className="emph-teal">machine learning models </span> and <span className='emph-teal'>research software</span> than can enable surveillance and outbreak investigations of <em> Salmonella </em> Typhimurium, drawing on
-                classical machine learning methods, conformal prediction and uncertainty quantification, as well as modern
-                software engineering practices. In parallel, I contribute to research
-                software engineering efforts across my department — building
-                platforms and tooling that enable scientific research at scale.
+                I am a second-year PhD student working on{" "}
+                <span className="emph-magenta">computational biology</span>{" "}
+                and{" "}
+                <span className="emph-magenta">machine learning</span> applied
+                to pathogen genomics. My research focuses on developing{" "}
+                <span className="emph-teal">machine learning models</span>{" "}
+                and{" "}
+                <span className="emph-teal">research software</span> that
+                enable surveillance and outbreak investigations of{" "}
+                <i>Salmonella</i> Typhimurium, drawing on classical machine
+                learning, conformal prediction and uncertainty quantification,
+                as well as modern software engineering practices. In parallel,
+                I contribute to research software engineering efforts across
+                my department — building platforms and tooling that enable
+                scientific research at scale.
               </p>
             </div>
 
-            <div
+            <aside
               className="md:col-span-4 md:pl-6 md:border-l-2 py-1"
               style={{ borderColor: C.tealRule }}
+              aria-label="Profile metadata"
             >
               <div
                 className="small-caps text-[11px] tracking-[0.2em] mb-3"
@@ -320,29 +536,78 @@ export default function Page() {
               >
                 Metadata
               </div>
-              <dl className="space-y-2.5 text-[14px] font-mono tabular-nums" style={{ color: C.muted }}>
+              <dl
+                className="space-y-2.5 text-[14px] font-mono tabular-nums"
+                style={{ color: C.muted }}
+              >
                 <div>
-                  <dt className="inline" style={{ color: C.soft }}>Year · </dt>
-                  <dd className="inline" style={{ color: C.ink2 }}>2 of 3.5</dd>
+                  <dt className="inline" style={{ color: C.soft }}>
+                    Year ·{" "}
+                  </dt>
+                  <dd className="inline" style={{ color: C.ink2 }}>
+                    2 of 3.5
+                  </dd>
                 </div>
                 <div>
-                  <dt className="inline" style={{ color: C.soft }}>ORCID · </dt>
-                  <dd className="inline" style={{ color: C.teal }}>0009-0003-6188-2174</dd>
-                </div>
-                <div>
-                  <dt className="inline" style={{ color: C.soft }}>University of Surrey · </dt>
-                  <dd className="inline" style={{ color: C.ink2 }}>Ritchie Lab</dd>
-                </div>
-                <div>
-                  <dt className="inline" style={{ color: C.soft }}>Contact · </dt>
+                  <dt className="inline" style={{ color: C.soft }}>
+                    ORCID ·{" "}
+                  </dt>
                   <dd className="inline">
-                    <a href="mailto:gk00709@surrey.ac.uk" className="scholarly-link">
+                    <a
+                      href="https://orcid.org/0009-0003-6188-2174"
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: C.teal }}
+                    >
+                      0009-0003-6188-2174
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="inline" style={{ color: C.soft }}>
+                    Lab ·{" "}
+                  </dt>
+                  <dd className="inline" style={{ color: C.ink2 }}>
+                    Ritchie Lab, Surrey
+                  </dd>
+                </div>
+                <div>
+                  <dt className="inline" style={{ color: C.soft }}>
+                    Contact ·{" "}
+                  </dt>
+                  <dd className="inline">
+                    <a
+                      href="mailto:gk00709@surrey.ac.uk"
+                      className="scholarly-link"
+                    >
                       gk00709@surrey.ac.uk
                     </a>
                   </dd>
                 </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <span
+                    className="pulse-dot inline-block w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: C.teal }}
+                    aria-hidden="true"
+                  />
+                  <span style={{ color: C.soft }}>Status ·</span>
+                  <span style={{ color: C.ink2 }}>actively researching</span>
+                </div>
               </dl>
-            </div>
+
+              <figure
+                className="mt-7 pt-5 border-t"
+                style={{ borderColor: C.ruleSoft }}
+              >
+                <Cladogram className="w-full" />
+                <figcaption
+                  className="small-caps text-[10px] tracking-[0.2em] mt-2"
+                  style={{ color: C.soft }}
+                >
+                  Fig. 1 — schematic phylogeny
+                </figcaption>
+              </figure>
+            </aside>
           </div>
 
           <div className="mb-12">
@@ -352,8 +617,11 @@ export default function Page() {
             >
               Keywords
             </div>
-            <p className="text-[16px] font-serif italic" style={{ color: C.ink2 }}>
-              {researchAreas.join(" · ")}
+            <p
+              className="text-[16px] font-serif italic"
+              style={{ color: C.ink2 }}
+            >
+              {RESEARCH_AREAS.join(" · ")}
             </p>
           </div>
 
@@ -363,7 +631,7 @@ export default function Page() {
               className="scholarly-link inline-flex items-center gap-1"
             >
               View experience
-              <span>↓</span>
+              <span aria-hidden="true">↓</span>
             </button>
             <span style={{ color: C.rule }}>|</span>
             <button
@@ -374,9 +642,33 @@ export default function Page() {
               <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
             <span style={{ color: C.rule }}>|</span>
-            <a href="#" className="scholarly-link inline-flex items-center gap-1">
-              Download CV (PDF)
-            </a>
+            <span
+              className="hidden sm:inline-flex items-center gap-2 font-mono text-[12px] tabular-nums"
+              style={{ color: C.soft }}
+            >
+              <kbd
+                className="px-1.5 py-0.5 rounded border"
+                style={{
+                  borderColor: C.rule,
+                  backgroundColor: C.paper,
+                  color: C.ink2,
+                }}
+              >
+                1
+              </kbd>
+              <span>–</span>
+              <kbd
+                className="px-1.5 py-0.5 rounded border"
+                style={{
+                  borderColor: C.rule,
+                  backgroundColor: C.paper,
+                  color: C.ink2,
+                }}
+              >
+                5
+              </kbd>
+              <span>jump to section</span>
+            </span>
           </div>
         </section>
 
@@ -390,24 +682,28 @@ export default function Page() {
               <p>
                 I work at the boundary between{" "}
                 <span className="emph-magenta">research</span> and{" "}
-                <span className="emph-magenta">research software engineering</span> —
-                developing both the scientific methods and the software that makes them reproducible and accesible at scale.
+                <span className="emph-magenta">research software engineering</span>{" "}
+                — developing both the scientific methods and the software that
+                makes them reproducible and accessible at scale.
               </p>
               <p>
                 My doctoral research investigates{" "}
-                <span className="emph-teal">host-association models of <em> Salmonella </em> Typhimurium</span>, using
-                a combination of machine learning, software engineering,
-                and bayesian inference. I have deployed production-grade
-                research software to solve research problems and enable efficient scientific research.
+                <span className="emph-teal">
+                  host-association models of <i>Salmonella</i> Typhimurium
+                </span>
+                , using a combination of machine learning, software
+                engineering, and Bayesian inference. I have deployed
+                production-grade research software to solve research problems
+                and enable efficient scientific investigation.
               </p>
               <p>
                 I am particularly interested in the{" "}
                 <span className="emph-magenta">
                   reproducibility, observability, and operational readiness
                 </span>{" "}
-                of scientific software — the engineering practices that let research
-                results survive contact with new machines, new users, and the
-                passage of time.
+                of scientific software — the engineering practices that let
+                research results survive contact with new machines, new users,
+                and the passage of time.
               </p>
             </div>
 
@@ -416,13 +712,24 @@ export default function Page() {
               style={{ borderColor: C.tealRule }}
             >
               {[
-                { label: "Ph.D.", sub: "in progress (yr 2 of 3.5)", color: C.teal },
-                { label: "RSE", sub: "research software engineering", color: C.teal },
+                {
+                  label: "Ph.D.",
+                  sub: "in progress · year 2 of 3.5",
+                },
+                {
+                  label: "RSE",
+                  sub: "research software engineering",
+                },
               ].map((c) => (
                 <div key={c.label}>
                   <div
                     className="font-serif"
-                    style={{ color: c.color, fontSize: "2.125rem", lineHeight: 1, fontWeight: 500 }}
+                    style={{
+                      color: C.teal,
+                      fontSize: "2.125rem",
+                      lineHeight: 1,
+                      fontWeight: 500,
+                    }}
                   >
                     {c.label}
                   </div>
@@ -441,15 +748,9 @@ export default function Page() {
         {/* SKILLS — § 2 */}
         <Section id="skills" num="2" title="Skills">
           <div className="mb-14">
-            <div
-              className="small-caps text-[11px] tracking-[0.2em] mb-5 flex items-center gap-3"
-            >
-              <span className="font-mono" style={{ color: C.teal }}>§ 2.1</span>
-              <span style={{ color: C.magenta }}>Research Areas</span>
-              <span className="flex-1 h-px" style={{ backgroundColor: C.ruleSoft }} />
-            </div>
+            <SubsectionHeading num="2.1" label="Research Areas" />
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-3">
-              {researchAreas.map((a) => (
+              {RESEARCH_AREAS.map((a) => (
                 <div
                   key={a}
                   className="text-[16px] font-serif italic"
@@ -462,15 +763,9 @@ export default function Page() {
           </div>
 
           <div>
-            <div
-              className="small-caps text-[11px] tracking-[0.2em] mb-6 flex items-center gap-3"
-            >
-              <span className="font-mono" style={{ color: C.teal }}>§ 2.2</span>
-              <span style={{ color: C.magenta }}>Technical Stack</span>
-              <span className="flex-1 h-px" style={{ backgroundColor: C.ruleSoft }} />
-            </div>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-x-10 gap-y-10">
-              {skills.map((s) => (
+            <SubsectionHeading num="2.2" label="Technical Stack" />
+            <div className="grid sm:grid-cols-2 md:grid-cols-2 gap-x-10 gap-y-10">
+              {SKILLS.map((s) => (
                 <div key={s.title}>
                   <div
                     className="small-caps text-[12px] tracking-[0.14em] pb-2 mb-3 border-b-2"
@@ -478,7 +773,10 @@ export default function Page() {
                   >
                     {s.title}
                   </div>
-                  <ul className="space-y-1.5 text-[15px] font-mono" style={{ color: C.ink2 }}>
+                  <ul
+                    className="space-y-1.5 text-[15px] font-mono"
+                    style={{ color: C.ink2 }}
+                  >
                     {s.items.map((item) => (
                       <li key={item}>{item}</li>
                     ))}
@@ -492,8 +790,8 @@ export default function Page() {
         {/* EXPERIENCE — § 3 */}
         <Section id="experience" num="3" title="Experience">
           <div className="space-y-12">
-            {experience.map((job, i) => (
-              <div
+            {EXPERIENCE.map((job, i) => (
+              <article
                 key={i}
                 className="grid md:grid-cols-12 gap-6 md:gap-8 pb-12 border-b last:border-b-0 last:pb-0 hairline"
               >
@@ -508,7 +806,12 @@ export default function Page() {
                 <div className="md:col-span-9">
                   <h3
                     className="font-serif mb-1"
-                    style={{ color: C.ink, fontSize: "1.65rem", lineHeight: 1.2, fontWeight: 500 }}
+                    style={{
+                      color: C.ink,
+                      fontSize: "1.65rem",
+                      lineHeight: 1.2,
+                      fontWeight: 500,
+                    }}
                   >
                     {job.role}
                   </h3>
@@ -521,37 +824,35 @@ export default function Page() {
                   <p
                     className="text-[16px] leading-relaxed mb-4 justify-para"
                     style={{ color: C.ink2 }}
-                    dangerouslySetInnerHTML={{ __html: job.summary }}
-                  />
+                  >
+                    {job.summary}
+                  </p>
                   <ol className="space-y-2 mb-5 text-[15px] leading-relaxed list-none">
                     {job.bullets.map((b, bi) => (
-                      <li key={bi} className="flex gap-3" style={{ color: C.ink2 }}>
+                      <li
+                        key={bi}
+                        className="flex gap-3"
+                        style={{ color: C.ink2 }}
+                      >
                         <span
                           className="flex-shrink-0 font-mono text-[13px] pt-0.5"
                           style={{ color: C.teal }}
                         >
                           ({romanize(bi + 1)})
                         </span>
-                        <span className="justify-para" dangerouslySetInnerHTML={{ __html: b }} />
+                        <span className="justify-para">{b}</span>
                       </li>
                     ))}
                   </ol>
-                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[12px]">
-                    {job.tags.map((t, ti) => (
-                      <span
-                        key={t}
-                        className="px-2 py-0.5 rounded"
-                        style={{
-                          color: C.teal,
-                          backgroundColor: C.tealSoft,
-                        }}
-                      >
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 font-mono text-[12px]">
+                    {job.tags.map((t) => (
+                      <span key={t} className="tag px-2 py-0.5 rounded">
                         {t}
                       </span>
                     ))}
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </Section>
@@ -559,7 +860,7 @@ export default function Page() {
         {/* EDUCATION — § 4 */}
         <Section id="education" num="4" title="Education">
           <div>
-            {education.map((e, i) => (
+            {EDUCATION.map((e, i) => (
               <div
                 key={i}
                 className="grid md:grid-cols-12 gap-6 py-6 border-t hairline"
@@ -573,7 +874,12 @@ export default function Page() {
                 <div className="md:col-span-9">
                   <div
                     className="font-serif"
-                    style={{ color: C.ink, fontSize: "1.35rem", lineHeight: 1.3, fontWeight: 500 }}
+                    style={{
+                      color: C.ink,
+                      fontSize: "1.35rem",
+                      lineHeight: 1.3,
+                      fontWeight: 500,
+                    }}
                   >
                     {e.degree}
                     <span
@@ -584,9 +890,12 @@ export default function Page() {
                     </span>
                   </div>
                   {e.note && (
-                    <div className="text-[14px] mt-1 italic" style={{ color: C.muted }}
-                      dangerouslySetInnerHTML={{ __html: e.note }}
-                    />
+                    <div
+                      className="text-[14px] mt-1 italic"
+                      style={{ color: C.muted }}
+                    >
+                      {e.note}
+                    </div>
                   )}
                 </div>
               </div>
@@ -602,15 +911,19 @@ export default function Page() {
                 className="font-serif text-[20px] leading-[1.5] mb-6 justify-para"
                 style={{ color: C.ink2 }}
               >
-                Open to research & software collaborations, research software engineering roles, and
-                conversations about interesting and difficult scientific problems! I respond to most
-                messages within a day.
+                Open to research and software collaborations, research
+                software engineering roles, and conversations about
+                interesting and difficult scientific problems. I respond to
+                most messages within a day.
               </p>
               <div
                 className="small-caps text-[11px] tracking-[0.18em] flex items-center gap-2"
                 style={{ color: C.muted }}
               >
-                <MapPin className="w-3.5 h-3.5" style={{ color: C.teal }} />
+                <MapPin
+                  className="w-3.5 h-3.5"
+                  style={{ color: C.teal }}
+                />
                 <span>Guildford, United Kingdom</span>
               </div>
             </div>
@@ -619,7 +932,7 @@ export default function Page() {
               <ContactLink
                 icon={Mail}
                 label="Email"
-                value="george.kolodziejczyk@surrey.ac.uk"
+                value="gk00709@surrey.ac.uk"
                 href="mailto:gk00709@surrey.ac.uk"
               />
               <ContactLink
@@ -637,23 +950,22 @@ export default function Page() {
               <ContactLink
                 icon={LinkedinIcon}
                 label="LinkedIn"
-                value="www.linkedin.com/in/georgemkolodziejczyk/"
+                value="linkedin.com/in/georgemkolodziejczyk"
                 href="https://www.linkedin.com/in/georgemkolodziejczyk/"
               />
             </div>
           </div>
         </Section>
-
       </main>
 
-      <footer className="relative mt-16 border-t hairline">
+      <footer className="relative mt-16 border-t hairline no-print">
         <div
           className="max-w-4xl mx-auto px-6 py-8 flex flex-wrap justify-between items-baseline gap-2 small-caps text-[11px] tracking-[0.16em] font-mono"
           style={{ color: C.soft }}
         >
           <div>© 2026 George Kolodziejczyk · All rights reserved</div>
           <div>
-            <span style={{ color: C.teal }}>v 1.0</span> · last compiled 2026-04-23
+            <span style={{ color: C.teal }}>v 1.1</span> · last compiled 2026-04-29
           </div>
         </div>
       </footer>
@@ -664,7 +976,10 @@ export default function Page() {
 function Section({ id, num, title, children }) {
   return (
     <section id={id} className="pt-24 pb-4 scroll-mt-20">
-      <div className="mb-10 flex items-baseline gap-4 pb-4 border-b-2" style={{ borderColor: C.tealRule }}>
+      <div
+        className="mb-10 flex items-baseline gap-4 pb-4 border-b-2"
+        style={{ borderColor: C.tealRule }}
+      >
         <span className="font-mono text-[14px]" style={{ color: C.teal }}>
           § {num}
         </span>
@@ -686,6 +1001,18 @@ function Section({ id, num, title, children }) {
   );
 }
 
+function SubsectionHeading({ num, label }) {
+  return (
+    <div className="small-caps text-[11px] tracking-[0.2em] mb-6 flex items-center gap-3">
+      <span className="font-mono" style={{ color: C.teal }}>
+        § {num}
+      </span>
+      <span style={{ color: C.magenta }}>{label}</span>
+      <span className="flex-1 h-px" style={{ backgroundColor: C.ruleSoft }} />
+    </div>
+  );
+}
+
 function ContactLink({ icon: Icon, label, value, href }) {
   return (
     <a
@@ -695,12 +1022,21 @@ function ContactLink({ icon: Icon, label, value, href }) {
       className="group flex items-center justify-between py-4 border-b hairline transition-colors"
     >
       <div className="flex items-center gap-4">
-        <Icon className="w-4 h-4 transition-colors" style={{ color: C.teal }} />
+        <Icon
+          className="w-4 h-4 transition-colors"
+          style={{ color: C.teal }}
+        />
         <div>
-          <div className="small-caps text-[11px] tracking-[0.18em]" style={{ color: C.soft }}>
+          <div
+            className="small-caps text-[11px] tracking-[0.18em]"
+            style={{ color: C.soft }}
+          >
             {label}
           </div>
-          <div className="text-[15px] font-mono" style={{ color: C.ink }}>
+          <div
+            className="text-[15px] font-mono"
+            style={{ color: C.ink }}
+          >
             {value}
           </div>
         </div>
