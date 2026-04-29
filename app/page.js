@@ -266,7 +266,6 @@ export default function Page() {
           <div className="text-[11px] tracking-[0.22em] small-caps mb-10 flex items-center gap-3">
             <span className="font-mono" style={{ color: C.teal }}>§ 0</span>
             <span className="flex-1 h-px" style={{ backgroundColor: C.rule }} />
-            <span style={{ color: C.soft }}>Portfolio · Version 1.0</span>
           </div>
 
           <h1
