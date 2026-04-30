@@ -30,15 +30,15 @@ function OrcidIcon(props) {
 
 // Theme — dark, warm, with a single bioluminescent accent.
 const T = {
-  bg: "#0a0a0b",
-  bgRaised: "#101012",
-  bgPanel: "#141416",
+  bg: "#0f1014",
+  bgRaised: "#16171c",
+  bgPanel: "#1c1d22",
   ink: "#ece9e2",
-  ink2: "#c8c5bd",
-  muted: "#8a8780",
-  soft: "#5a5853",
-  rule: "rgba(236, 233, 226, 0.08)",
-  ruleStrong: "rgba(236, 233, 226, 0.16)",
+  ink2: "#cfccc4",
+  muted: "#969289",
+  soft: "#65635d",
+  rule: "rgba(236, 233, 226, 0.10)",
+  ruleStrong: "rgba(236, 233, 226, 0.18)",
   accent: "#7af5b3",
   accentDim: "rgba(122, 245, 179, 0.55)",
   accentSoft: "rgba(122, 245, 179, 0.10)",
@@ -190,9 +190,9 @@ const EDUCATION = [
 ];
 
 // ----------------------------------------------------------------------------
-// Animated particle network — drawn on canvas, mouse-reactive, lightweight.
+// Procedural phylogenetic tree — branches grow from a root, mouse-near tips wobble.
 // ----------------------------------------------------------------------------
-function ParticleField() {
+function PhyloTree() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -205,17 +205,12 @@ function ParticleField() {
     const ctx = canvas.getContext("2d");
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    let width = 0;
-    let height = 0;
-    let particles = [];
+    let width = 0,
+      height = 0,
+      raf = 0,
+      t = 0;
+    let nodes = [];
     const mouse = { x: -9999, y: -9999, active: false };
-    let raf = 0;
-
-    const density = () => {
-      const area = width * height;
-      // ~1 particle per 14k px², capped for perf
-      return Math.max(40, Math.min(110, Math.floor(area / 14000)));
-    };
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -225,88 +220,108 @@ function ParticleField() {
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
-      seed();
+      buildTree();
     };
 
-    const seed = () => {
-      const N = density();
-      particles = new Array(N).fill(0).map(() => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.18,
-        vy: (Math.random() - 0.5) * 0.18,
-        r: 0.7 + Math.random() * 1.1,
-      }));
-    };
+    const buildTree = () => {
+      nodes = [];
+      // Root is offscreen-left so the trunk doesn't sit next to the title.
+      const root = {
+        x: -width * 0.08,
+        y: height * 0.5,
+        angle: 0,
+        len: 0,
+        depth: 0,
+        parent: null,
+        grow: 1,
+        wobble: Math.random() * Math.PI * 2,
+      };
+      nodes.push(root);
 
-    const MAX_DIST = 130;
-    const MAX_DIST_SQ = MAX_DIST * MAX_DIST;
+      const grow = (parent, depth, baseAngle) => {
+        if (depth > 8) return;
+        const branches = depth < 2 ? 2 : Math.random() < 0.45 ? 3 : 2;
+        for (let i = 0; i < branches; i++) {
+          const spread = 0.55 + Math.random() * 0.25;
+          const a =
+            baseAngle +
+            (i - (branches - 1) / 2) *
+              (spread / Math.max(1, branches - 1));
+          const len =
+            width * 0.18 *
+            Math.pow(0.84, depth) *
+            (0.85 + Math.random() * 0.3);
+          const node = {
+            x: parent.x + Math.cos(a) * len,
+            y: parent.y + Math.sin(a) * len,
+            angle: a,
+            len,
+            depth: depth + 1,
+            parent,
+            grow: 0,
+            wobble: Math.random() * Math.PI * 2,
+          };
+          nodes.push(node);
+          grow(node, depth + 1, a);
+        }
+      };
+      grow(root, 0, 0);
+    };
 
     const tick = () => {
+      t += 0.012;
       ctx.clearRect(0, 0, width, height);
 
-      // Subtle radial wash
-      const grad = ctx.createRadialGradient(
-        width * 0.7,
-        height * 0.25,
-        0,
-        width * 0.7,
-        height * 0.25,
-        Math.max(width, height) * 0.7
-      );
-      grad.addColorStop(0, "rgba(122, 245, 179, 0.05)");
-      grad.addColorStop(1, "rgba(122, 245, 179, 0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
+      for (const n of nodes) {
+        const target = Math.min(1, Math.max(0, t * 0.7 - n.depth * 0.18));
+        n.grow += (target - n.grow) * 0.05;
+      }
 
-      // Update
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < -10) p.x = width + 10;
-        if (p.x > width + 10) p.x = -10;
-        if (p.y < -10) p.y = height + 10;
-        if (p.y > height + 10) p.y = -10;
-
+      for (const n of nodes) {
+        if (!n.parent) continue;
+        let mx = 0,
+          my = 0;
         if (mouse.active) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
+          const dx = n.x - mouse.x;
+          const dy = n.y - mouse.y;
           const d2 = dx * dx + dy * dy;
-          if (d2 < 130 * 130 && d2 > 0.001) {
-            const d = Math.sqrt(d2);
-            const force = (1 - d / 130) * 0.6;
-            p.x += (dx / d) * force;
-            p.y += (dy / d) * force;
+          if (d2 < 180 * 180) {
+            const d = Math.max(1, Math.sqrt(d2));
+            const f = (1 - d / 180) * 8;
+            mx = (dx / d) * f;
+            my = (dy / d) * f;
           }
         }
+        const wob = Math.sin(t * 0.9 + n.wobble) * (1 + n.depth * 0.4);
+        n._dx = mx + Math.cos(n.angle + Math.PI / 2) * wob * 0.3;
+        n._dy = my + Math.sin(n.angle + Math.PI / 2) * wob * 0.3;
       }
 
-      // Edges
-      ctx.lineWidth = 0.6;
-      const N = particles.length;
-      for (let i = 0; i < N; i++) {
-        const a = particles[i];
-        for (let j = i + 1; j < N; j++) {
-          const b = particles[j];
-          const dx = a.x - b.x;
-          const dy = a.y - b.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < MAX_DIST_SQ) {
-            const alpha = (1 - d2 / MAX_DIST_SQ) * 0.22;
-            ctx.strokeStyle = `rgba(122, 245, 179, ${alpha})`;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Nodes
-      for (const p of particles) {
-        ctx.fillStyle = "rgba(122, 245, 179, 0.55)";
+      for (const n of nodes) {
+        if (!n.parent) continue;
+        const p = n.parent;
+        const ex = p.x + (n.x + (n._dx || 0) - p.x) * n.grow;
+        const ey = p.y + (n.y + (n._dy || 0) - p.y) * n.grow;
+        const alpha = 0.18 + (1 - n.depth / 9) * 0.35;
+        ctx.strokeStyle = `rgba(122, 245, 179, ${alpha * n.grow})`;
+        ctx.lineWidth = Math.max(0.5, 2.2 - n.depth * 0.28);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+      }
+
+      for (const n of nodes) {
+        if (n.depth < 4) continue;
+        const ex = n.parent
+          ? n.parent.x + (n.x + (n._dx || 0) - n.parent.x) * n.grow
+          : n.x;
+        const ey = n.parent
+          ? n.parent.y + (n.y + (n._dy || 0) - n.parent.y) * n.grow
+          : n.y;
+        ctx.fillStyle = `rgba(122, 245, 179, ${0.55 * n.grow})`;
+        ctx.beginPath();
+        ctx.arc(ex, ey, 1.4, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -326,9 +341,11 @@ function ParticleField() {
     };
 
     resize();
-    if (!reduce) tick();
-    else {
-      // Static frame for reduced-motion users
+    if (!reduce) {
+      tick();
+    } else {
+      // Reduced motion: snap all nodes to fully grown and draw a single static frame.
+      for (const n of nodes) n.grow = 1;
       tick();
       cancelAnimationFrame(raf);
     }
@@ -635,7 +652,7 @@ export default function Page() {
       <div
         className="fixed top-0 left-0 right-0 z-[60] no-print font-mono"
         style={{
-          backgroundColor: "rgba(10,10,11,0.85)",
+          backgroundColor: "rgba(15,16,20,0.85)",
           backdropFilter: "blur(10px)",
           WebkitBackdropFilter: "blur(10px)",
           borderBottom: `1px solid ${T.rule}`,
@@ -686,7 +703,7 @@ export default function Page() {
         className="fixed left-0 right-0 z-50 no-print"
         style={{
           top: 28,
-          backgroundColor: "rgba(10,10,11,0.72)",
+          backgroundColor: "rgba(15,16,20,0.72)",
           backdropFilter: "blur(14px)",
           WebkitBackdropFilter: "blur(14px)",
           borderBottom: `1px solid ${T.rule}`,
@@ -749,7 +766,7 @@ export default function Page() {
         <div className="relative" style={{ height: "min(100vh, 880px)" }}>
           {/* Animated canvas */}
           <div className="absolute inset-0 overflow-hidden">
-            <ParticleField />
+            <PhyloTree />
             {/* Soft top/bottom fades */}
             <div
               className="absolute inset-x-0 top-0 h-32 pointer-events-none"
