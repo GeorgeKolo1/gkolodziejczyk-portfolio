@@ -2,8 +2,9 @@
 
 html,
 body {
-  background: #0a0a0b;
+  background: #0f1014;
   color: #ece9e2;
+  overflow-x: clip;
 }
 
 html {

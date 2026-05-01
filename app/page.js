@@ -48,12 +48,12 @@ const T = {
 };
 
 const NAV_ITEMS = [
-  { id: "about", label: "About", num: "01" },
-  { id: "research", label: "Research", num: "02" },
-  { id: "experience", label: "Experience", num: "03" },
-  { id: "education", label: "Education", num: "04" },
-  { id: "skills", label: "Skills", num: "05" },
-  { id: "contact", label: "Contact", num: "06" },
+  { id: "about", label: "About"},
+  { id: "research", label: "Research"},
+  { id: "experience", label: "Experience"},
+  { id: "education", label: "Education"},
+  { id: "skills", label: "Skills"},
+  { id: "contact", label: "Contact"},
 ];
 
 const RESEARCH_AREAS = [
@@ -172,7 +172,7 @@ const EDUCATION = [
     school: "University of Surrey",
     note: (
       <>
-        Thesis — Machine learning approaches for genomic host association in{" "}
+        Thesis — Machine learning approaches for genomic host-association in{" "}
         <i>Salmonella</i>.
       </>
     ),
@@ -190,9 +190,62 @@ const EDUCATION = [
 ];
 
 // ----------------------------------------------------------------------------
-// Procedural phylogenetic tree — branches grow from a root, mouse-near tips wobble.
+// Ambient glow — soft accent-coloured radial that follows the cursor with easing.
+// Page-wide, low opacity, behind content.
 // ----------------------------------------------------------------------------
-function PhyloTree() {
+function AmbientGlow() {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let raf = 0;
+    let tx = window.innerWidth / 2,
+      ty = window.innerHeight / 2;
+    let cx = tx,
+      cy = ty;
+
+    const onMove = (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+    };
+
+    const tick = () => {
+      cx += (tx - cx) * 0.06;
+      cy += (ty - cy) * 0.06;
+      el.style.setProperty("--gx", `${cx}px`);
+      el.style.setProperty("--gy", `${cy}px`);
+      raf = requestAnimationFrame(tick);
+    };
+
+    if (!reduce) tick();
+    window.addEventListener("pointermove", onMove);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className="fixed inset-0 pointer-events-none"
+      style={{
+        zIndex: 0,
+        background:
+          "radial-gradient(520px circle at var(--gx, 50%) var(--gy, 50%), rgba(122, 245, 179, 0.06), transparent 65%)",
+      }}
+    />
+  );
+}
+
+// ----------------------------------------------------------------------------
+// DNA double helix — slow rotating ribbons with depth cues. Sized to its container.
+// ----------------------------------------------------------------------------
+function DnaHelix() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -209,8 +262,6 @@ function PhyloTree() {
       height = 0,
       raf = 0,
       t = 0;
-    let nodes = [];
-    const mouse = { x: -9999, y: -9999, active: false };
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
@@ -220,146 +271,106 @@ function PhyloTree() {
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.scale(dpr, dpr);
-      buildTree();
-    };
-
-    const buildTree = () => {
-      nodes = [];
-      // Root is offscreen-left so the trunk doesn't sit next to the title.
-      const root = {
-        x: -width * 0.08,
-        y: height * 0.5,
-        angle: 0,
-        len: 0,
-        depth: 0,
-        parent: null,
-        grow: 1,
-        wobble: Math.random() * Math.PI * 2,
-      };
-      nodes.push(root);
-
-      const grow = (parent, depth, baseAngle) => {
-        if (depth > 8) return;
-        const branches = depth < 2 ? 2 : Math.random() < 0.45 ? 3 : 2;
-        for (let i = 0; i < branches; i++) {
-          const spread = 0.55 + Math.random() * 0.25;
-          const a =
-            baseAngle +
-            (i - (branches - 1) / 2) *
-              (spread / Math.max(1, branches - 1));
-          const len =
-            width * 0.18 *
-            Math.pow(0.84, depth) *
-            (0.85 + Math.random() * 0.3);
-          const node = {
-            x: parent.x + Math.cos(a) * len,
-            y: parent.y + Math.sin(a) * len,
-            angle: a,
-            len,
-            depth: depth + 1,
-            parent,
-            grow: 0,
-            wobble: Math.random() * Math.PI * 2,
-          };
-          nodes.push(node);
-          grow(node, depth + 1, a);
-        }
-      };
-      grow(root, 0, 0);
     };
 
     const tick = () => {
-      t += 0.012;
+      t += 0.0035;
       ctx.clearRect(0, 0, width, height);
 
-      for (const n of nodes) {
-        const target = Math.min(1, Math.max(0, t * 0.7 - n.depth * 0.18));
-        n.grow += (target - n.grow) * 0.05;
+      const cx = width / 2;
+      const cy = height / 2;
+      const helixHeight = height * 0.94;
+      const amp = width * 0.34;
+      const turns = 3.2;
+      const STEPS = 160;
+
+      const points = [];
+      for (let i = 0; i <= STEPS; i++) {
+        const u = i / STEPS;
+        const y = cy - helixHeight / 2 + u * helixHeight;
+        const phase = u * turns * Math.PI * 2 + t;
+        const x1 = cx + Math.cos(phase) * amp;
+        const x2 = cx + Math.cos(phase + Math.PI) * amp;
+        const z1 = Math.sin(phase);
+        const z2 = Math.sin(phase + Math.PI);
+        points.push({ x1, x2, y, z1, z2 });
       }
 
-      for (const n of nodes) {
-        if (!n.parent) continue;
-        let mx = 0,
-          my = 0;
-        if (mouse.active) {
-          const dx = n.x - mouse.x;
-          const dy = n.y - mouse.y;
-          const d2 = dx * dx + dy * dy;
-          if (d2 < 180 * 180) {
-            const d = Math.max(1, Math.sqrt(d2));
-            const f = (1 - d / 180) * 8;
-            mx = (dx / d) * f;
-            my = (dy / d) * f;
-          }
-        }
-        const wob = Math.sin(t * 0.9 + n.wobble) * (1 + n.depth * 0.4);
-        n._dx = mx + Math.cos(n.angle + Math.PI / 2) * wob * 0.3;
-        n._dy = my + Math.sin(n.angle + Math.PI / 2) * wob * 0.3;
+      // rungs (back-to-front)
+      const rungs = [];
+      for (let i = 0; i < points.length; i += 5) {
+        rungs.push({ p: points[i], depth: (points[i].z1 + points[i].z2) / 2 });
       }
-
-      for (const n of nodes) {
-        if (!n.parent) continue;
-        const p = n.parent;
-        const ex = p.x + (n.x + (n._dx || 0) - p.x) * n.grow;
-        const ey = p.y + (n.y + (n._dy || 0) - p.y) * n.grow;
-        const alpha = 0.18 + (1 - n.depth / 9) * 0.35;
-        ctx.strokeStyle = `rgba(122, 245, 179, ${alpha * n.grow})`;
-        ctx.lineWidth = Math.max(0.5, 2.2 - n.depth * 0.28);
+      rungs.sort((a, b) => a.depth - b.depth);
+      for (const r of rungs) {
+        const p = r.p;
+        const depth = (p.z1 + p.z2) / 2;
+        const alpha = 0.14 + (depth + 1) * 0.10;
+        ctx.strokeStyle = `rgba(122, 245, 179, ${alpha})`;
+        ctx.lineWidth = 0.7;
         ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(ex, ey);
+        ctx.moveTo(p.x1, p.y);
+        ctx.lineTo(p.x2, p.y);
         ctx.stroke();
       }
 
-      for (const n of nodes) {
-        if (n.depth < 4) continue;
-        const ex = n.parent
-          ? n.parent.x + (n.x + (n._dx || 0) - n.parent.x) * n.grow
-          : n.x;
-        const ey = n.parent
-          ? n.parent.y + (n.y + (n._dy || 0) - n.parent.y) * n.grow
-          : n.y;
-        ctx.fillStyle = `rgba(122, 245, 179, ${0.55 * n.grow})`;
+      const drawRibbon = (key) => {
+        for (let i = 0; i < points.length - 1; i++) {
+          const a = points[i];
+          const b = points[i + 1];
+          const za = key === 1 ? a.z1 : a.z2;
+          const zb = key === 1 ? b.z1 : b.z2;
+          const depth = (za + zb) / 2;
+          const alpha = 0.28 + (depth + 1) * 0.30;
+          const lw = 1 + (depth + 1) * 0.7;
+          ctx.strokeStyle = `rgba(122, 245, 179, ${alpha})`;
+          ctx.lineWidth = lw;
+          ctx.beginPath();
+          ctx.moveTo(key === 1 ? a.x1 : a.x2, a.y);
+          ctx.lineTo(key === 1 ? b.x1 : b.x2, b.y);
+          ctx.stroke();
+        }
+      };
+
+      const avg1 = points.reduce((s, p) => s + p.z1, 0) / points.length;
+      const avg2 = points.reduce((s, p) => s + p.z2, 0) / points.length;
+      if (avg1 < avg2) {
+        drawRibbon(1);
+        drawRibbon(2);
+      } else {
+        drawRibbon(2);
+        drawRibbon(1);
+      }
+
+      // base-pair dots
+      for (let i = 0; i < points.length; i += 5) {
+        const p = points[i];
+        ctx.fillStyle = `rgba(122, 245, 179, ${0.45 + (p.z1 + 1) * 0.22})`;
         ctx.beginPath();
-        ctx.arc(ex, ey, 1.4, 0, Math.PI * 2);
+        ctx.arc(p.x1, p.y, 1.2 + (p.z1 + 1) * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = `rgba(122, 245, 179, ${0.45 + (p.z2 + 1) * 0.22})`;
+        ctx.beginPath();
+        ctx.arc(p.x2, p.y, 1.2 + (p.z2 + 1) * 0.5, 0, Math.PI * 2);
         ctx.fill();
       }
 
       raf = requestAnimationFrame(tick);
     };
 
-    const onMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-      mouse.active = true;
-    };
-    const onLeave = () => {
-      mouse.active = false;
-      mouse.x = -9999;
-      mouse.y = -9999;
-    };
-
     resize();
     if (!reduce) {
       tick();
     } else {
-      // Reduced motion: snap all nodes to fully grown and draw a single static frame.
-      for (const n of nodes) n.grow = 1;
       tick();
       cancelAnimationFrame(raf);
     }
 
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerleave", onLeave);
-
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
@@ -510,8 +521,12 @@ export default function Page() {
     const reduce =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // getBoundingClientRect + scrollY gives the section's true document Y,
+    // independent of offsetParent (main is position: relative so offsetTop
+    // would otherwise be measured within main, not the document).
+    const top = el.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({
-      top: el.offsetTop - 80,
+      top,
       behavior: reduce ? "auto" : "smooth",
     });
   };
@@ -647,6 +662,7 @@ export default function Page() {
       `}</style>
 
       <div className="grain" aria-hidden="true" />
+      <AmbientGlow />
 
       {/* Top status bar */}
       <div
@@ -669,9 +685,6 @@ export default function Page() {
                 style={{ backgroundColor: T.accent }}
                 aria-hidden="true"
               />
-              <span style={{ color: T.ink2 }}>SYSTEM</span>
-              <span style={{ color: T.soft }}>·</span>
-              <span style={{ color: T.accent }}>online</span>
             </span>
             <span className="hidden sm:inline" style={{ color: T.soft }}>|</span>
             <span className="hidden sm:inline">
@@ -683,7 +696,6 @@ export default function Page() {
             <span className="hidden md:inline" style={{ color: T.soft }}>
               {now}
             </span>
-            <span style={{ color: T.soft }}>v2.0</span>
           </div>
         </div>
         {/* Reading progress, integrated */}
@@ -719,7 +731,6 @@ export default function Page() {
               className="font-mono text-[11px] tabular-nums"
               style={{ color: T.accent }}
             >
-              [GMK]
             </span>
             <span
               className="font-display"
@@ -763,35 +774,16 @@ export default function Page() {
 
       {/* HERO */}
       <header className="relative" style={{ paddingTop: 28 + 56 }}>
-        <div className="relative" style={{ height: "min(100vh, 880px)" }}>
-          {/* Animated canvas */}
-          <div className="absolute inset-0 overflow-hidden">
-            <PhyloTree />
-            {/* Soft top/bottom fades */}
-            <div
-              className="absolute inset-x-0 top-0 h-32 pointer-events-none"
-              style={{
-                background: `linear-gradient(to bottom, ${T.bg}, transparent)`,
-              }}
-            />
-            <div
-              className="absolute inset-x-0 bottom-0 h-40 pointer-events-none"
-              style={{
-                background: `linear-gradient(to top, ${T.bg}, transparent)`,
-              }}
-            />
-          </div>
-
+        <div className="relative" style={{ height: "100vh" }}>
           {/* Content */}
-          <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex flex-col justify-center pb-12">
+          <div className="relative z-10 max-w-6xl mx-auto px-6 h-full flex flex-col justify-start pt-12 pb-12">
             <Reveal>
               <div
-                className="font-mono text-[11px] small-caps mb-8 flex items-center gap-3"
+                className="font-mono text-[11px] small-caps mb-1 flex items-center gap-3"
                 style={{ color: T.muted }}
               >
-                <span style={{ color: T.accent }}>vol. ii</span>
                 <span style={{ color: T.soft }}>—</span>
-                <span>research portfolio · 2026</span>
+                <span>research and software engineering portfolio</span>
                 <span
                   className="hidden sm:inline-block flex-1 h-px max-w-[160px]"
                   style={{ backgroundColor: T.rule }}
@@ -803,7 +795,7 @@ export default function Page() {
               <h1
                 className="font-display tighten"
                 style={{
-                  fontSize: "clamp(3.5rem, 11vw, 9rem)",
+                  fontSize: "clamp(3.5rem, 11vw, 7rem)",
                   lineHeight: 0.92,
                   color: T.ink,
                 }}
@@ -811,13 +803,12 @@ export default function Page() {
                 George M.
                 <br />
                 <span style={{ fontStyle: "italic" }}>Kolodziejczyk</span>
-                <span style={{ color: T.accent }}>.</span>
               </h1>
             </Reveal>
 
             <Reveal delay={180}>
               <div
-                className="mt-10 grid md:grid-cols-12 gap-8 items-end"
+                className="mt-2 grid md:grid-cols-12 gap-8 items-center"
               >
                 <div className="md:col-span-7">
                   <p
@@ -829,7 +820,7 @@ export default function Page() {
                       maxWidth: "44ch",
                     }}
                   >
-                    Research engineer working on{" "}
+                    PhD student working on{" "}
                     <span style={{ color: T.accent }}>machine learning</span>{" "}
                     and{" "}
                     <span style={{ color: T.accent }}>research software</span>{" "}
@@ -837,7 +828,7 @@ export default function Page() {
                   </p>
                 </div>
 
-                <div className="md:col-span-5 flex md:justify-end">
+                <div className="md:col-span-5 flex md:justify-end items-center gap-6">
                   <div
                     className="font-mono text-[12px] tabular-nums w-full md:w-auto"
                     style={{ color: T.muted }}
@@ -851,20 +842,27 @@ export default function Page() {
                     <div className="flex items-center gap-3 mb-2">
                       <span style={{ color: T.soft }}>aff.</span>
                       <span style={{ color: T.ink2 }}>
-                        Ritchie Lab · Surrey · APHA
+                        ·Ritchie Lab - University of Surrey
+                        ·Animal and Plant Health Agency (APHA)
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span style={{ color: T.soft }}>status</span>
                       <span className="flex items-center gap-2">
-                        <span
-                          className="pulse inline-block w-1.5 h-1.5 rounded-full"
-                          style={{ backgroundColor: T.accent }}
-                          aria-hidden="true"
-                        />
-                        <span style={{ color: T.ink }}>actively researching</span>
+                        <span style={{ color: T.ink }}>looking for research or engineering opportunities</span>
                       </span>
                     </div>
+                  </div>
+                  {/* Helix: positioned slightly to the right of the meta block. */}
+                  <div
+                    className="hidden md:block flex-shrink-0 relative"
+                    style={{
+                      width: 260,
+                      height: 540,
+                    }}
+                    aria-hidden="true"
+                  >
+                    <DnaHelix />
                   </div>
                 </div>
               </div>
@@ -872,7 +870,7 @@ export default function Page() {
 
             <Reveal delay={280}>
               <div
-                className="mt-14 flex flex-wrap gap-x-8 gap-y-3 items-center font-mono text-[12px]"
+                className="mt-2 flex flex-wrap gap-x-8 gap-y-3 items-center font-mono text-[12px]"
               >
                 <button
                   onClick={() => scrollTo("research")}
@@ -888,32 +886,17 @@ export default function Page() {
                   <span>get in touch</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
+                <a
+                  href="/projects"
+                  className="link inline-flex items-center gap-1.5"
+                >
+                  <span>projects</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
                 <span
                   className="hidden sm:inline-flex items-center gap-2"
                   style={{ color: T.soft }}
                 >
-                  <kbd
-                    className="px-1.5 py-0.5 rounded"
-                    style={{
-                      border: `1px solid ${T.rule}`,
-                      backgroundColor: T.bgRaised,
-                      color: T.ink2,
-                    }}
-                  >
-                    1
-                  </kbd>
-                  <span>–</span>
-                  <kbd
-                    className="px-1.5 py-0.5 rounded"
-                    style={{
-                      border: `1px solid ${T.rule}`,
-                      backgroundColor: T.bgRaised,
-                      color: T.ink2,
-                    }}
-                  >
-                    6
-                  </kbd>
-                  <span>navigate</span>
                 </span>
               </div>
             </Reveal>
@@ -938,7 +921,7 @@ export default function Page() {
 
       <main className="relative max-w-6xl mx-auto px-6 pt-12 pb-16">
         {/* ABOUT */}
-        <Section id="about" num="01" title="About">
+        <Section id="about" title="About">
           <div className="grid md:grid-cols-12 gap-12">
             <Reveal className="md:col-span-7">
               <div
@@ -951,8 +934,8 @@ export default function Page() {
               >
                 <p>
                   I work at the boundary between{" "}
-                  <span style={{ color: T.ink }}>research</span> and{" "}
-                  <span style={{ color: T.ink }}>
+                  <span style={{ color: T.accent }}>research</span> and{" "}
+                  <span style={{ color: T.accent }}>
                     research software engineering
                   </span>
                   — developing the scientific methods and the software that
@@ -1010,7 +993,7 @@ export default function Page() {
                       </a>
                     }
                   />
-                  <Meta label="lab" value="Ritchie Lab — Surrey & APHA" />
+                  <Meta label="lab" value="Ritchie Lab — University of Surrey, APHA" />
                   <Meta label="loc" value="Guildford, United Kingdom" />
                   <Meta
                     label="email"
@@ -1044,7 +1027,7 @@ export default function Page() {
         </Section>
 
         {/* RESEARCH */}
-        <Section id="research" num="02" title="Research">
+        <Section id="research" title="Research">
           <Reveal>
             <p
               className="font-sans mb-10 max-w-2xl"
@@ -1097,7 +1080,7 @@ export default function Page() {
         </Section>
 
         {/* EXPERIENCE */}
-        <Section id="experience" num="03" title="Experience">
+        <Section id="experience" title="Experience">
           <div className="space-y-16">
             {EXPERIENCE.map((job, i) => (
               <Reveal key={i}>
@@ -1187,7 +1170,7 @@ export default function Page() {
         </Section>
 
         {/* EDUCATION */}
-        <Section id="education" num="04" title="Education">
+        <Section id="education" title="Education">
           <div>
             {EDUCATION.map((e, i) => (
               <Reveal key={i} delay={i * 80}>
@@ -1231,7 +1214,7 @@ export default function Page() {
         </Section>
 
         {/* SKILLS */}
-        <Section id="skills" num="05" title="Skills">
+        <Section id="skills" title="Skills">
           <div className="grid md:grid-cols-2 gap-px">
             {SKILLS.map((s, i) => (
               <Reveal key={s.title} delay={i * 60} className="card p-7">
@@ -1277,7 +1260,7 @@ export default function Page() {
         </Section>
 
         {/* CONTACT */}
-        <Section id="contact" num="06" title="Contact">
+        <Section id="contact" title="Contact">
           <div className="grid md:grid-cols-12 gap-12 items-start">
             <Reveal className="md:col-span-7">
               <p
@@ -1290,7 +1273,7 @@ export default function Page() {
                   marginBottom: "1.5rem",
                 }}
               >
-                Open to research and software collaborations, research software
+                Open to research and engineering collaborations, scientist or research software
                 engineering roles, and conversations about{" "}
                 <span style={{ fontStyle: "italic", color: T.accent }}>
                   interesting and difficult scientific problems
